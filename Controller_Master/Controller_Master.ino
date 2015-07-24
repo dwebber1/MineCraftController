@@ -7,7 +7,9 @@ int esc = 8;
 int e = 6;
 int encoderPin1 = 2;
 int encoderPin2 = 3;
+
 boolean SpacealreadyOn = false;
+boolean WalreadyOn = false;
 
 const int switchPin   =  5;
 const int ledPin = 13; 
