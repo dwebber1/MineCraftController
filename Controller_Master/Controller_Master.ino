@@ -10,6 +10,10 @@ int encoderPin2 = 3;
 
 boolean SpacealreadyOn = false;
 boolean WalreadyOn = false;
+boolean AalreadyOn = false;
+boolean SalreadyOn = false;
+boolean DalreadyOn = false;
+
 
 const int switchPin   =  5;
 const int ledPin = 13; 
