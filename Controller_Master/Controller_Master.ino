@@ -2,11 +2,17 @@
 int space = 7;
 int esc = 8;
 int e = 6;
+int leftClick=4;
 int encoderPin1 = 2;
 int encoderPin2 = 3;
 boolean alreadyOn = false;
 boolean ealreadyOn = false;
 boolean escapealreadyOn = false;
+boolean WalreadyOn = false;
+boolean AalreadyOn = false;
+boolean SalreadyOn = false;
+boolean DalreadyOn = false;
+boolean leftClickalreadyOn = false;
 
 const int switchPin   =  5;
 const int ledPin = 13;
@@ -60,9 +66,10 @@ void setup() {
   pinMode(ledPin, OUTPUT);
 
 
-  pinMode(space, INPUT);
+  pinMode(space, INPUT_PULLUP);
   pinMode(esc, INPUT);
   pinMode(e, INPUT);
+  pinMode(leftClick,INPUT_PULLUP);
 
   pinMode(encoderPin1, INPUT);
   pinMode(encoderPin2, INPUT);
@@ -199,7 +206,7 @@ int readAxis(int thisAxis) {
 }
 
 void jump() {
-  if (digitalRead(space) == HIGH  ) {
+  if (digitalRead(space) == LOW           ) {
     if (!alreadyOn) {
       Keyboard.press(32);
       //delay(100);
@@ -244,6 +251,21 @@ void jump() {
 
   }
 
+  if (digitalRead(leftClick) == LOW  ) {
+    if (!leftClickalreadyOn) {
+      Mouse.press();
+      //delay(100);
+      leftClickalreadyOn = true;
+
+    }
+  }
+
+  else {
+    Mouse.release();
+    leftClickalreadyOn = false;
+
+  }
+
 
 
 }
@@ -252,37 +274,95 @@ void WASD() {
   int xValue = analogRead(MouseXaxis);
   int yValue = analogRead(MouseYaxis);
 
-  if (xValue > 511 && xValue < 1025) {
-    Keyboard.press('d');
-    delay(500);
+  //  if (xValue > 511 && xValue < 1025) {
+  //    Keyboard.press('d');
+  //    //delay(500);
+  //
+  //  }
+  //  else {
+  //    Keyboard.release('d');
+  //  }
+  //  if (xValue > -1 && xValue < 509) {
+  //    Keyboard.press('a');
+  //    //delay(500);
+  //
+  //  }
+  //  else {
+  //    Keyboard.release('a');
+  //  }
 
-  }
-  else {
-    Keyboard.release('d');
-  }
-  if (xValue > -1 && xValue < 509) {
-    Keyboard.press('a');
-    delay(500);
+  //  if (yValue > 523 && yValue < 1025) {
+  //    Keyboard.press('s');
+  //    //delay(500);
+  //  }
+  //  else {
+  //    Keyboard.release('s');
+  //  }
+  //  if (yValue > -1 && yValue < 506) {
+  //    Keyboard.press('w');
+  //    //delay(500);
+  //
+  //  }
+  //  else {
+  //    Keyboard.release('w');
+  //  }
 
-  }
-  else {
-    Keyboard.release('a');
-  }
-
-  if (yValue > 523 && yValue < 1025) {
-    Keyboard.press('s');
-    delay(500);
-  }
-  else {
-    Keyboard.release('s');
-  }
   if (yValue > -1 && yValue < 506) {
-    Keyboard.press('w');
-    delay(500);
+    if (!WalreadyOn) {
+      Keyboard.press('w');
+      //delay(100);
+      WalreadyOn = true;
 
+    }
   }
+
   else {
     Keyboard.release('w');
+    WalreadyOn = false;
+
+  }
+  if (yValue > 523 && yValue < 1025) {
+    if (!SalreadyOn) {
+      Keyboard.press('s');
+      //delay(100);
+      SalreadyOn = true;
+
+    }
+  }
+
+  else {
+    Keyboard.release('s');
+    SalreadyOn = false;
+
+  }
+  if (xValue > -1 && xValue < 509) {
+    if (!AalreadyOn) {
+      Keyboard.press('a');
+      //delay(100);
+      AalreadyOn = true;
+
+    }
+  }
+
+  else {
+    Keyboard.release('a');
+    AalreadyOn = false;
+
+  }
+
+  if (xValue > 511 && xValue < 1025) {
+    if (!DalreadyOn) {
+      Keyboard.press('d');
+      //delay(100);
+      DalreadyOn = true;
+
+    }
+  }
+
+  else {
+    Keyboard.release('d');
+    DalreadyOn = false;
+
   }
 
 
