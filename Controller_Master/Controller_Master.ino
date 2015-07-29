@@ -1,26 +1,24 @@
-int w = 12;
-int a = 11;
-int d = 10;
-int s = 9;
+
 int space = 7;
 int esc = 8;
 int e = 6;
 int encoderPin1 = 2;
 int encoderPin2 = 3;
-
-boolean SpacealreadyOn = false;
-boolean WalreadyOn = false;
-boolean AalreadyOn = false;
-boolean SalreadyOn = false;
-boolean DalreadyOn = false;
-
+boolean alreadyOn = false;
+boolean ealreadyOn = false;
+boolean escapealreadyOn = false;
 
 const int switchPin   =  5;
-const int ledPin = 13; 
-//const int mouseButton = 7;  
+const int ledPin = 13;
+//const int mouseButton = 7;
 
-const int xAxis  = A1;         // joystick X axis to A1 
-const int yAxis  = A0; 
+const int xAxis  = A1;         // joystick X axis to A1
+const int yAxis  = A0;
+
+int MouseXaxis = A2;
+int MouseYaxis = A3;
+
+
 
 volatile int lastEncoded = 0;
 volatile long encoderValue = 0;
@@ -35,8 +33,8 @@ int dif = 0;
 
 int range = 12;               // output range of X or Y movement (zero to range)
 int responseDelay = 5;        // response delay of the mouse, in ms
-int threshold = range/4;      // resting threshold
-int center = range/2;         // resting position value
+int threshold = range / 4;    // resting threshold
+int center = range / 2;       // resting position value
 const float powerValue = 1.9; // for exponential behavior, 1 < value < 2
 
 boolean mouseIsActive = false;      // whether or not to control the mouse
@@ -48,26 +46,23 @@ long debounce = 50;
 
 //Debounce for spacebar
 
-int spacestate=0;
+int spacestate = 0;
 
 
 
 
 void setup() {
   Keyboard.begin();
-  Mouse.begin();  
+  Mouse.begin();
   pinMode(switchPin,   INPUT);   // the switch pin
   //pinMode(mouseButton, INPUT_PULLUP);
-  
-  pinMode(ledPin, OUTPUT);    
-  
-  pinMode(w,INPUT);
-  pinMode(a,INPUT);
-  pinMode(s,INPUT);
-  pinMode(d,INPUT);
-  pinMode(space,INPUT);
-  pinMode(esc,INPUT);
-  pinMode(e,INPUT);
+
+  pinMode(ledPin, OUTPUT);
+
+
+  pinMode(space, INPUT);
+  pinMode(esc, INPUT);
+  pinMode(e, INPUT);
 
   pinMode(encoderPin1, INPUT);
   pinMode(encoderPin2, INPUT);
@@ -77,60 +72,21 @@ void setup() {
 
   attachInterrupt(0, updateEncoder, CHANGE);
   attachInterrupt(1, updateEncoder, CHANGE);
-  
-  
+
+
 }
 
 void loop() {
-   mouse();
-   wasd();
-   scroll();
-   jump();
-   
+  mouse();
+  WASD();
+  scroll();
+  jump();
+
 }
 
-void wasd(){
 
-  if (digitalRead(w) == HIGH) {
-    Keyboard.press('w'); 
-    delay(200);
-  }
-  if (digitalRead(a) == HIGH) {
-    Keyboard.press('a'); 
-    delay(200);
-  }
-  if (digitalRead(s) == HIGH) {
-    Keyboard.press('s'); 
-    delay(200);
-  }
-  if (digitalRead(d) == HIGH) {
-    Keyboard.press('d'); 
-    delay(200);
-  }
-  
-  
-  if (digitalRead(esc) == HIGH) {
-    Keyboard.press(177); 
-    delay(300);
-  }
-   if (digitalRead(e) == HIGH) {
-    Keyboard.press('e'); 
-    delay(300);
-  }
-//  //else{
-//  Keyboard.releaseAll();
 //
-//  
-//  //e
-//  
-//
-//
-//   
-//                                                         
-//                                                                  
-//   }
-//  
-}
+
 void updateEncoder() {
   int MSB = digitalRead(encoderPin1); //MSB = most significant bit
   int LSB = digitalRead(encoderPin2); //LSB = least significant bit
@@ -144,35 +100,35 @@ void updateEncoder() {
   lastEncoded = encoded; //store this value for next time
 }
 
-void scroll(){
+void scroll() {
   oldValue = newValue;
   newValue = encoderValue;
-  dif = (oldValue - newValue)/2;
-  
+  dif = (oldValue - newValue) / 2;
+
 
 
   Serial.println(dif);
   if (oldValue != newValue) {
     //Serial.println("The Values are different");
     Mouse.move(0, 0, dif);
-    
+
 
   }
 }
 
-void mouse(){
+void mouse() {
   int switchState;  // State of the mouse enable/disable button
-   //int buttonState;  // State of the mouse left button switch on joystick
+  //int buttonState;  // State of the mouse left button switch on joystick
   int xReading, yReading; // readings of the joystick movements
-  int buttonReading;   
+  int buttonReading;
 
   switchState = digitalRead(switchPin);  // read the mouse disable switch
   // if it's changed and it's high, toggle the mouse state
   if (switchState != lastSwitchState) {
     if (switchState == HIGH) {
       mouseIsActive = !mouseIsActive;
-     digitalWrite(13, mouseIsActive);   // toggle LED to indicate mouse state
-    } 
+      digitalWrite(13, mouseIsActive);   // toggle LED to indicate mouse state
+    }
   }
   lastSwitchState = switchState;    // save switch state for next comparison
 
@@ -182,50 +138,50 @@ void mouse(){
 
   // This code gives the mouse a nonlinear acceleratione
   //   These 8 lines may be commented out to have linear acceleration
-  if(xReading > 0)
-     xReading =  (int)pow(powerValue,xReading);
-  else if(xReading < 0)
-     xReading = -(int)pow(powerValue,-xReading);
-     
-  if(yReading > 0)
-     yReading =  (int)pow(powerValue,yReading);
-  else if(yReading < 0)
-     yReading = -(int)pow(powerValue,-yReading);  // end nonlinear acceleration code
+  if (xReading > 0)
+    xReading =  (int)pow(powerValue, xReading);
+  else if (xReading < 0)
+    xReading = -(int)pow(powerValue, -xReading);
 
-  // Read the joystick button as the left mouse button.  Debounce per 
+  if (yReading > 0)
+    yReading =  (int)pow(powerValue, yReading);
+  else if (yReading < 0)
+    yReading = -(int)pow(powerValue, -yReading); // end nonlinear acceleration code
+
+  // Read the joystick button as the left mouse button.  Debounce per
   //   Ladyada code at https://learn.adafruit.com/tilt-sensor/using-a-tilt-sensor
-//  //buttonReading = digitalRead(mouseButton);  // read the mouse left button (push joystick)
-//  if(buttonReading != lastReading) {         // switch changed
-//     debounceTime = millis();                // reset debounce timer
-//  }
-//  if((millis() - debounceTime) > debounce) {
-//     buttonState = buttonReading;
-//     if(buttonState == LOW) {
-//        mouseButtonPressed = true;
-//     }
-//     else {
-//        mouseButtonPressed = false;
-//     }
-//  } 
-//  lastReading = buttonReading;
-//  digitalWrite(ledPin, mouseButtonPressed);  // toggle LED to indicate button state
-//  
+  //  //buttonReading = digitalRead(mouseButton);  // read the mouse left button (push joystick)
+  //  if(buttonReading != lastReading) {         // switch changed
+  //     debounceTime = millis();                // reset debounce timer
+  //  }
+  //  if((millis() - debounceTime) > debounce) {
+  //     buttonState = buttonReading;
+  //     if(buttonState == LOW) {
+  //        mouseButtonPressed = true;
+  //     }
+  //     else {
+  //        mouseButtonPressed = false;
+  //     }
+  //  }
+  //  lastReading = buttonReading;
+  //  digitalWrite(ledPin, mouseButtonPressed);  // toggle LED to indicate button state
+  //
   // if the mouse control state is active, move the mouse:
   if (mouseIsActive) {
-      if (mouseButtonPressed) {  // if joystick pressed down, indicate that too
-         Mouse.move(xReading, yReading, 0);
-         //digitalWrite(13,HIGH);
-      }
-      else {
-         Mouse.move(xReading, yReading,0);  // move, no mouse button press
-      }
-  }  
+    if (mouseButtonPressed) {  // if joystick pressed down, indicate that too
+      Mouse.move(xReading, yReading, 0);
+      //digitalWrite(13,HIGH);
+    }
+    else {
+      Mouse.move(xReading, yReading, 0); // move, no mouse button press
+    }
+  }
   delay(responseDelay);  // wait between mouse readings
 }
 
-// Reads a joystick axis (0 or 1 for x or y) and scales the 
+// Reads a joystick axis (0 or 1 for x or y) and scales the
 //  analog input range to a range from 0 to <range>
-int readAxis(int thisAxis) { 
+int readAxis(int thisAxis) {
   int reading = analogRead(thisAxis);  // read the analog input
 
   // map the reading from the analog input range to the output range
@@ -236,31 +192,105 @@ int readAxis(int thisAxis) {
 
   if (abs(distance) < threshold) { // if distance not to threshold, no move
     distance = 0;                  // prevents tiny jitters due to readings
-  } 
+  }
   return distance;   // return the distance for this axis
 
 
 }
 
-void jump(){
-   if (digitalRead(space)==HIGH  ){
-    if(!SpacealreadyOn){
-    Keyboard.press(32);
-    //delay(100);
-    SpacealreadyOn = true;
-    
+void jump() {
+  if (digitalRead(space) == HIGH  ) {
+    if (!alreadyOn) {
+      Keyboard.press(32);
+      //delay(100);
+      alreadyOn = true;
+
     }
-  }    
-    
-    else{
-      Keyboard.release(32);
-      SpacealreadyOn= false;
-      
+  }
+
+  else {
+    Keyboard.release(32);
+    alreadyOn = false;
+
+  }
+
+  if (digitalRead(e) == HIGH  ) {
+    if (!ealreadyOn) {
+      Keyboard.press('e');
+      //delay(100);
+      ealreadyOn = true;
+
     }
+  }
+
+  else {
+    Keyboard.release('e');
+    ealreadyOn = false;
+
+  }
+
+  if (digitalRead(esc) == HIGH  ) {
+    if (!escapealreadyOn) {
+      Keyboard.press(177);
+      //delay(100);
+      escapealreadyOn = true;
+
+    }
+  }
+
+  else {
+    Keyboard.release(177);
+    escapealreadyOn = false;
+
+  }
+
+
+
 }
 
-  
+void WASD() {
+  int xValue = analogRead(MouseXaxis);
+  int yValue = analogRead(MouseYaxis);
 
+  if (xValue > 511 && xValue < 1025) {
+    Keyboard.press('d');
+    delay(500);
+
+  }
+  else {
+    Keyboard.release('d');
+  }
+  if (xValue > -1 && xValue < 509) {
+    Keyboard.press('a');
+    delay(500);
+
+  }
+  else {
+    Keyboard.release('a');
+  }
+
+  if (yValue > 523 && yValue < 1025) {
+    Keyboard.press('s');
+    delay(500);
+  }
+  else {
+    Keyboard.release('s');
+  }
+  if (yValue > -1 && yValue < 506) {
+    Keyboard.press('w');
+    delay(500);
+
+  }
+  else {
+    Keyboard.release('w');
+  }
+
+
+
+
+
+
+}
 
 
 
