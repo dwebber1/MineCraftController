@@ -85,9 +85,9 @@ void setup() {
 
 void loop() {
   mouse();
-  WASD();
+  //WASD();
   scroll();
-  jump();
+jump();
 
 }
 
@@ -114,7 +114,7 @@ void scroll() {
 
 
 
-  Serial.println(dif);
+  //Serial.println(dif);
   if (oldValue != newValue) {
     //Serial.println("The Values are different");
     Mouse.move(0, 0, dif);
@@ -183,14 +183,14 @@ void mouse() {
       Mouse.move(xReading, yReading, 0); // move, no mouse button press
     }
   }
-  delay(responseDelay);  // wait between mouse readings
+  //delay(responseDelay);  // wait between mouse readings
 }
 
 // Reads a joystick axis (0 or 1 for x or y) and scales the
 //  analog input range to a range from 0 to <range>
 int readAxis(int thisAxis) {
   int reading = analogRead(thisAxis);  // read the analog input
-
+         
   // map the reading from the analog input range to the output range
   reading = map(reading, 0, 1023, 0, range);
 
@@ -306,8 +306,7 @@ void WASD() {
   //  else {
   //    Keyboard.release('w');
   //  }
-
-  if (yValue > -1 && yValue < 506) {
+  if (yValue > -1 && yValue < 50) {
     if (!WalreadyOn) {
       Keyboard.press('w');
       //delay(100);
@@ -334,8 +333,8 @@ void WASD() {
     Keyboard.release('s');
     SalreadyOn = false;
 
-  }
-  if (xValue > -1 && xValue < 509) {
+  }//a
+  if (xValue > -1 && xValue < 500) {
     if (!AalreadyOn) {
       Keyboard.press('a');
       //delay(100);
